@@ -23,7 +23,15 @@ namespace LeaveManagementSystem.Controllers
         {
             //var data=SELECT * FROM LeaveTypes
             var data = await _context.LeaveTypes.ToListAsync();
-            return View(data);
+            //convert datamodel to view model
+            var viewData = data.Select(x => new Models.LeaveTypes.IndexVM
+            {
+                LeaveTypeId = x.LeaveTypeId,
+                LeaveTypeName = x.LeaveTypeName,
+                Days = x.NumberOfDays
+            });
+            // return view model to view  
+            return View(viewData);
         }
 
         // GET: LeaveTypes/Details/5
@@ -57,6 +65,14 @@ namespace LeaveManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("LeaveTypeId,LeaveTypeName,NumberOfDays")] LeaveType leaveType)
         {
+            //if(leaveType.LeaveTypeName.Contains("Vacation"))
+            //{                
+            //    ModelState.AddModelError("LeaveTypeName", "Vacation is not allowed in leave type name");
+            //}
+            if(await CheckIfLeaveTypeNameExists(leaveType.LeaveTypeName))
+            {
+                ModelState.AddModelError(nameof(leaveType.LeaveTypeName), "This Leave Type already exists in the database");
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(leaveType);
@@ -65,7 +81,11 @@ namespace LeaveManagementSystem.Controllers
             }
             return View(leaveType);
         }
-
+         private async Task<bool> CheckIfLeaveTypeNameExists(string name)
+        {
+            var lowercaseName = name.ToLower();
+            return await _context.LeaveTypes.AnyAsync(q => q.LeaveTypeName.ToLower().Equals(lowercaseName));
+        }
         // GET: LeaveTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

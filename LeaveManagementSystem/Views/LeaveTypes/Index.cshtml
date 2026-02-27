@@ -1,5 +1,5 @@
-﻿@model IEnumerable<LeaveManagementSystem.Data.LeaveType>
-
+﻿@using LeaveManagementSystem.Models.LeaveTypes;
+@model IEnumerable<IndexVM>
 @{
     ViewData["Title" ] = "Index";
 }
@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.LeaveTypeName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NumberOfDays)
+                @Html.DisplayNameFor(model => model.Days)
             </th>
             <th></th>
         </tr>
@@ -28,7 +28,7 @@
                 @Html.DisplayFor(modelItem => item.LeaveTypeName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.NumberOfDays)
+                @Html.DisplayFor(modelItem => item.Days)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.LeaveTypeId" class="btn btn-warning">Edit</a> |
